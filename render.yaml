@@ -1,0 +1,120 @@
+services:
+  - type: keyvalue
+    name: ecom-redis
+    plan: free
+    region: ohio
+    ipAllowList: []
+
+  - type: web
+    name: suzi-ecom-user
+    runtime: docker
+    plan: free
+    region: ohio
+    rootDir: user-service
+    envVars:
+      - fromGroup: ecom-shared
+      - key: SERVER_PORT
+        value: "10000"
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx300m
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+
+  - type: web
+    name: suzi-ecom-inventory
+    runtime: docker
+    plan: free
+    region: ohio
+    rootDir: inventory-service
+    envVars:
+      - fromGroup: ecom-shared
+      - key: SERVER_PORT
+        value: "10000"
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx300m
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+
+  - type: web
+    name: suzi-ecom-product
+    runtime: docker
+    plan: free
+    region: ohio
+    rootDir: product-service
+    envVars:
+      - fromGroup: ecom-shared
+      - key: SERVER_PORT
+        value: "10000"
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx300m
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+      - key: INVENTORY_SERVICE_URL
+        value: https://suzi-ecom-inventory.onrender.com
+      - key: SPRING_DATA_REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: ecom-redis
+          property: host
+      - key: SPRING_DATA_REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: ecom-redis
+          property: port
+
+  - type: web
+    name: suzi-ecom-cart
+    runtime: docker
+    plan: free
+    region: ohio
+    rootDir: cart-service
+    envVars:
+      - fromGroup: ecom-shared
+      - key: SERVER_PORT
+        value: "10000"
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx300m
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+      - key: PRODUCT_SERVICE_URL
+        value: https://suzi-ecom-product.onrender.com
+      - key: INVENTORY_SERVICE_URL
+        value: https://suzi-ecom-inventory.onrender.com
+
+  - type: web
+    name: suzi-ecom-payment
+    runtime: docker
+    plan: free
+    region: ohio
+    rootDir: payment-service
+    envVars:
+      - fromGroup: ecom-shared
+      - key: SERVER_PORT
+        value: "10000"
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx300m
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+
+  - type: web
+    name: suzi-ecom-order
+    runtime: docker
+    plan: free
+    region: ohio
+    rootDir: order-service
+    envVars:
+      - fromGroup: ecom-shared
+      - key: SERVER_PORT
+        value: "10000"
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx300m
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+      - key: CART_SERVICE_URL
+        value: https://suzi-ecom-cart.onrender.com
+      - key: PRODUCT_SERVICE_URL
+        value: https://suzi-ecom-product.onrender.com
+      - key: INVENTORY_SERVICE_URL
+        value: https://suzi-ecom-inventory.onrender.com
+      - key: PAYMENT_SERVICE_URL
+        value: https://suzi-ecom-payment.onrender.com
